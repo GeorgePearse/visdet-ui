@@ -120,6 +120,13 @@ module.exports = async ({ context, github, core }) => {
   const versionReleases = releases.data.filter(({ tag_name }) => tag_name.startsWith("v"));
   const sortedReleases = versionReleases.sort(compareVersions);
   const latest = sortedReleases[0];
+
+  // Skip if no releases exist yet
+  if (!latest) {
+    core.info("No releases found in this repository. Skipping patch label addition.");
+    return;
+  }
+
   const version = latest.tag_name.replace("v", "");
   const [major, minor, micro] = version.replace(/rc\d+$/, "").split(".");
   const nextMicro = version.includes("rc") ? micro : (parseInt(micro) + 1).toString();
