@@ -67,7 +67,7 @@ export const MlflowHeader = ({
       <div css={{ flex: 1 }} />
       <div css={{ display: 'flex', gap: theme.spacing.lg, alignItems: 'center' }}>
         <DarkThemeSwitch isDarkTheme={isDarkTheme} setIsDarkTheme={setIsDarkTheme} />
-        <a href="https://github.com/mlflow/mlflow">GitHub</a>
+        <a href="https://github.com/GeorgePearse/visdet-ui">GitHub</a>
         <a href={HomePageDocsUrl}>Docs</a>
       </div>
     </header>
