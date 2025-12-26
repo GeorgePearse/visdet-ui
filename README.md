@@ -123,6 +123,71 @@ Update `netlify.toml` to proxy API requests:
 
 Or set the `MLFLOW_TRACKING_URI` in your client applications to point to the Railway URL.
 
+### Backend (GCP via Terraform: Cloud Run + Cloud SQL + GCS)
+
+Terraform config lives in `infra/terraform` and a minimal container build is in `infra/docker/mlflow-server/Dockerfile`.
+
+**Deploy (high level):**
+
+1. Build + push the container image to Artifact Registry (recommended):
+
+```
+export PROJECT_ID="visdet-482415"
+export REGION="us-central1"
+
+gcloud config set project "$PROJECT_ID"
+gcloud auth configure-docker "${REGION}-docker.pkg.dev"
+
+export IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/visdet-mlflow-docker/mlflow-server:$(git rev-parse --short HEAD)"
+docker build -f infra/docker/mlflow-server/Dockerfile -t "$IMAGE_URI" .
+docker push "$IMAGE_URI"
+```
+
+2. Run Terraform to create Cloud Run, Cloud SQL, and the artifacts bucket:
+
+```
+cd infra/terraform
+terraform init
+terraform apply \
+  -var "project_id=$PROJECT_ID" \
+  -var "region=$REGION" \
+  -var "container_image=$IMAGE_URI"
+```
+
+3. Use the Terraform `cloud_run_url` output as your tracking server URL.
+
+**Access control (Cloud Run IAM):**
+
+By default this deploy is NOT public. Grant access to a user (or Google Group):
+
+```
+gcloud run services add-iam-policy-binding visdet-mlflow-server \
+  --region "$REGION" \
+  --member "user:you@example.com" \
+  --role "roles/run.invoker"
+```
+
+(You can also use `group:my-team@example.com` to grant a whole team.)
+
+**Cost guardrails:**
+
+- `cloud_run_max_instances` defaults to `2` to cap scale-out.
+- Cloud SQL defaults to a small tier (`db-f1-micro`) and 10GB disk.
+- Optional billing *alerts* can be enabled via Terraform (`enable_budget_alerts=true`), but GCP budgets do not hard-stop spend; they notify when thresholds are crossed.
+
+To enable budget alerts you’ll need your Billing Account ID and then run:
+
+```
+cd infra/terraform
+terraform apply \
+  -var "project_id=$PROJECT_ID" \
+  -var "region=$REGION" \
+  -var "container_image=$IMAGE_URI" \
+  -var "enable_budget_alerts=true" \
+  -var "billing_account_id=000000-000000-000000" \
+  -var "monthly_budget_usd=50"
+```
+
 ---
 
 ## 🚀 Installation
