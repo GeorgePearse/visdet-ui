@@ -13,7 +13,7 @@ Additional dependencies can be installed to leverage the full feature set of MLf
 <br>
 
 <h1 align="center" style="border-bottom: none">
-    <a href="https://mlflow.org/">
+    <a href="https://github.com/GeorgePearse/visdet-ui">
         <img alt="Visia logo" src="assets/logo.svg" width="200" />
     </a>
 </h1>
