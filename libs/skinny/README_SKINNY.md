@@ -14,7 +14,7 @@ Additional dependencies can be installed to leverage the full feature set of MLf
 
 <h1 align="center" style="border-bottom: none">
     <a href="https://mlflow.org/">
-        <img alt="Visia logo" src="../../assets/logo.svg" width="200" />
+        <img alt="Visia logo" src="assets/logo.svg" width="200" />
     </a>
 </h1>
 <h2 align="center" style="border-bottom: none">Open-Source Platform for Productionizing AI</h2>
@@ -48,6 +48,166 @@ MLflow is an open-source developer platform to build AI/LLM applications and mod
 </div>
 
 <br>
+
+## 🚀 Deployment (visdet-ui)
+
+This fork deploys the MLflow UI and backend separately for production use.
+
+### Frontend (Netlify) ✅
+
+The React frontend is deployed to Netlify via `netlify.toml`. Deploys automatically on push to master.
+
+### Backend (Railway + PostgreSQL + S3)
+
+#### Step 1: Create Railway Project
+
+1. Go to [railway.app](https://railway.app) and create a new project
+2. Select "Deploy from GitHub repo"
+3. Create a **new minimal repo** (recommended) or use a subdirectory
+
+**Minimal server repo structure:**
+
+```
+visdet-mlflow-server/
+├── Procfile
+├── requirements.txt
+└── README.md
+```
+
+**Procfile:**
+
+```
+web: mlflow server --host 0.0.0.0 --port $PORT --backend-store-uri $DATABASE_URL --default-artifact-root $MLFLOW_ARTIFACT_ROOT
+```
+
+**requirements.txt:**
+
+```
+mlflow>=2.0
+psycopg2-binary
+boto3
+```
+
+#### Step 2: Add PostgreSQL Database
+
+1. In Railway dashboard, click **"+ New"** → **"Database"** → **"PostgreSQL"**
+2. Railway automatically creates `DATABASE_URL` environment variable
+
+#### Step 3: Set Up S3 Artifact Storage
+
+**Option A: AWS S3**
+
+1. Create an S3 bucket (e.g., `visdet-mlflow-artifacts`)
+2. Create an IAM user with S3 access
+3. Note the Access Key ID and Secret Access Key
+
+**Option B: Cloudflare R2 (cheaper)**
+
+1. Create R2 bucket in Cloudflare dashboard
+2. Create R2 API token with read/write access
+3. Note the Account ID, Access Key, and Secret Key
+
+#### Step 4: Configure Railway Environment Variables
+
+In Railway project settings, add these variables:
+
+| Variable                | Value                          |
+| ----------------------- | ------------------------------ |
+| `MLFLOW_ARTIFACT_ROOT`  | `s3://your-bucket-name/mlflow` |
+| `AWS_ACCESS_KEY_ID`     | Your access key                |
+| `AWS_SECRET_ACCESS_KEY` | Your secret key                |
+| `AWS_DEFAULT_REGION`    | `us-east-1` (or your region)   |
+
+**For Cloudflare R2, also add:**
+| Variable | Value |
+|----------|-------|
+| `MLFLOW_S3_ENDPOINT_URL` | `https://<account-id>.r2.cloudflarestorage.com` |
+
+#### Step 5: Deploy
+
+1. Push the minimal server repo to GitHub
+2. Railway auto-deploys and provides a URL (e.g., `https://visdet-mlflow.up.railway.app`)
+
+#### Step 6: Connect Frontend to Backend
+
+Update `netlify.toml` to proxy API requests:
+
+```toml
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-railway-app.up.railway.app/api/:splat"
+  status = 200
+  force = true
+```
+
+Or set the `MLFLOW_TRACKING_URI` in your client applications to point to the Railway URL.
+
+### Backend (GCP via Terraform: Cloud Run + Cloud SQL + GCS)
+
+Terraform config lives in `infra/terraform` and a minimal container build is in `infra/docker/mlflow-server/Dockerfile`.
+
+**Deploy (high level):**
+
+1. Build + push the container image to Artifact Registry (recommended):
+
+```
+export PROJECT_ID="visdet-482415"
+export REGION="us-central1"
+
+gcloud config set project "$PROJECT_ID"
+gcloud auth configure-docker "${REGION}-docker.pkg.dev"
+
+export IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/visdet-mlflow-docker/mlflow-server:$(git rev-parse --short HEAD)"
+docker build -f infra/docker/mlflow-server/Dockerfile -t "$IMAGE_URI" .
+docker push "$IMAGE_URI"
+```
+
+2. Run Terraform to create Cloud Run, Cloud SQL, and the artifacts bucket:
+
+```
+cd infra/terraform
+terraform init
+terraform apply \
+  -var "project_id=$PROJECT_ID" \
+  -var "region=$REGION" \
+  -var "container_image=$IMAGE_URI"
+```
+
+3. Use the Terraform `cloud_run_url` output as your tracking server URL.
+
+**Access control (Cloud Run IAM):**
+
+By default this deploy is NOT public. Grant access to a user (or Google Group):
+
+```
+gcloud run services add-iam-policy-binding visdet-mlflow-server \
+  --region "$REGION" \
+  --member "user:you@example.com" \
+  --role "roles/run.invoker"
+```
+
+(You can also use `group:my-team@example.com` to grant a whole team.)
+
+**Cost guardrails:**
+
+- `cloud_run_max_instances` defaults to `2` to cap scale-out.
+- Cloud SQL defaults to a small tier (`db-f1-micro`) and 10GB disk.
+- Optional billing _alerts_ can be enabled via Terraform (`enable_budget_alerts=true`), but GCP budgets do not hard-stop spend; they notify when thresholds are crossed.
+
+To enable budget alerts you'll need your Billing Account ID and then run:
+
+```
+cd infra/terraform
+terraform apply \
+  -var "project_id=$PROJECT_ID" \
+  -var "region=$REGION" \
+  -var "container_image=$IMAGE_URI" \
+  -var "enable_budget_alerts=true" \
+  -var "billing_account_id=000000-000000-000000" \
+  -var "monthly_budget_usd=50"
+```
+
+---
 
 ## 🚀 Installation
 

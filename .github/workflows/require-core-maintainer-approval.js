@@ -68,6 +68,13 @@ module.exports = async ({ github, context, core }) => {
   const { pull_request: pr } = context.payload;
   const authorLogin = pr?.user?.login;
 
+  // In this fork, allow core maintainers to open PRs without a second approval.
+  // GitHub disallows approving your own PR, so requiring an approval from yourself
+  // would make maintainer-owned PRs impossible to merge.
+  if (authorLogin && maintainers.includes(authorLogin)) {
+    return;
+  }
+
   const files = await github.paginate(github.rest.pulls.listFiles, {
     owner: context.repo.owner,
     repo: context.repo.repo,
