@@ -53,6 +53,7 @@ jobs:
       - name: Disable problem matcher
         if: runner.os == 'Windows'
         run: |
+          # Previously used for ESLint; kept as a no-op.
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
       - name: Install dependencies (windows)

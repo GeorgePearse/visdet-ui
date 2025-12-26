@@ -1,0 +1,18 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true
+  },
+  "globals": {
+    "GridStackUI": "readonly",
+    "jQuery": "readonly",
+    "MG": "readonly"
+  },
+  "ignorePatterns": [
+    "build/**",
+    "coverage/**",
+    "node_modules/**",
+    "**/__generated__/**"
+  ]
+}
