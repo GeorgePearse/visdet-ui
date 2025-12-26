@@ -35,6 +35,96 @@ MLflow is an open-source developer platform to build AI/LLM applications and mod
 
 <br>
 
+## 🚀 Deployment (visdet-ui)
+
+This fork deploys the MLflow UI and backend separately for production use.
+
+### Frontend (Netlify) ✅
+
+The React frontend is deployed to Netlify via `netlify.toml`. Deploys automatically on push to master.
+
+### Backend (Railway + PostgreSQL + S3)
+
+#### Step 1: Create Railway Project
+
+1. Go to [railway.app](https://railway.app) and create a new project
+2. Select "Deploy from GitHub repo"
+3. Create a **new minimal repo** (recommended) or use a subdirectory
+
+**Minimal server repo structure:**
+```
+visdet-mlflow-server/
+├── Procfile
+├── requirements.txt
+└── README.md
+```
+
+**Procfile:**
+```
+web: mlflow server --host 0.0.0.0 --port $PORT --backend-store-uri $DATABASE_URL --default-artifact-root $MLFLOW_ARTIFACT_ROOT
+```
+
+**requirements.txt:**
+```
+mlflow>=2.0
+psycopg2-binary
+boto3
+```
+
+#### Step 2: Add PostgreSQL Database
+
+1. In Railway dashboard, click **"+ New"** → **"Database"** → **"PostgreSQL"**
+2. Railway automatically creates `DATABASE_URL` environment variable
+
+#### Step 3: Set Up S3 Artifact Storage
+
+**Option A: AWS S3**
+1. Create an S3 bucket (e.g., `visdet-mlflow-artifacts`)
+2. Create an IAM user with S3 access
+3. Note the Access Key ID and Secret Access Key
+
+**Option B: Cloudflare R2 (cheaper)**
+1. Create R2 bucket in Cloudflare dashboard
+2. Create R2 API token with read/write access
+3. Note the Account ID, Access Key, and Secret Key
+
+#### Step 4: Configure Railway Environment Variables
+
+In Railway project settings, add these variables:
+
+| Variable | Value |
+|----------|-------|
+| `MLFLOW_ARTIFACT_ROOT` | `s3://your-bucket-name/mlflow` |
+| `AWS_ACCESS_KEY_ID` | Your access key |
+| `AWS_SECRET_ACCESS_KEY` | Your secret key |
+| `AWS_DEFAULT_REGION` | `us-east-1` (or your region) |
+
+**For Cloudflare R2, also add:**
+| Variable | Value |
+|----------|-------|
+| `MLFLOW_S3_ENDPOINT_URL` | `https://<account-id>.r2.cloudflarestorage.com` |
+
+#### Step 5: Deploy
+
+1. Push the minimal server repo to GitHub
+2. Railway auto-deploys and provides a URL (e.g., `https://visdet-mlflow.up.railway.app`)
+
+#### Step 6: Connect Frontend to Backend
+
+Update `netlify.toml` to proxy API requests:
+
+```toml
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-railway-app.up.railway.app/api/:splat"
+  status = 200
+  force = true
+```
+
+Or set the `MLFLOW_TRACKING_URI` in your client applications to point to the Railway URL.
+
+---
+
 ## 🚀 Installation
 
 To install the MLflow Python package, run the following command:
