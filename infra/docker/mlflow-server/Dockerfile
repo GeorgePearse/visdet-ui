@@ -1,3 +1,32 @@
+FROM python:3.10-slim-bullseye AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    git \
+  && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs \
+  && npm install --global yarn \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copy source
+COPY . .
+
+# Build JS frontend
+WORKDIR /build/mlflow/server/js
+RUN yarn install --frozen-lockfile && yarn build
+
+# Build MLflow wheel
+WORKDIR /build
+RUN pip install --no-cache-dir build && python -m build --wheel
+
+# --- Runtime stage ---
 FROM python:3.10-slim-bullseye
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -5,14 +34,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install system deps only if needed by wheels.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# Install MLflow from PyPI (includes pre-built UI)
+# Copy and install the wheel
+COPY --from=builder /build/dist/*.whl /tmp/
 RUN pip install --no-cache-dir --upgrade pip \
-  && pip install --no-cache-dir mlflow psycopg2-binary google-cloud-storage
+  && pip install --no-cache-dir /tmp/*.whl psycopg2-binary google-cloud-storage \
+  && rm /tmp/*.whl
 
 EXPOSE 8080
 
