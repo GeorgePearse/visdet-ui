@@ -139,7 +139,7 @@
     <div class="content">
         <div class="header">
             <div class="logo">
-                <img src="https://raw.githubusercontent.com/mlflow/mlflow/refs/heads/master/assets/logo.svg" alt="MLflow Logo" />
+                <img src="../images/logo-light.svg" alt="Visia Logo" />
             </div>
             <h1>MLflow TypeScript SDK</h1>
             <div class="description">

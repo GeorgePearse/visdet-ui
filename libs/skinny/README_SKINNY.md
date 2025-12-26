@@ -14,7 +14,7 @@ Additional dependencies can be installed to leverage the full feature set of MLf
 
 <h1 align="center" style="border-bottom: none">
     <a href="https://mlflow.org/">
-        <img alt="MLflow logo" src="https://raw.githubusercontent.com/mlflow/mlflow/refs/heads/master/assets/logo.svg" width="200" />
+        <img alt="Visia logo" src="../../assets/logo.svg" width="200" />
     </a>
 </h1>
 <h2 align="center" style="border-bottom: none">Open-Source Platform for Productionizing AI</h2>
