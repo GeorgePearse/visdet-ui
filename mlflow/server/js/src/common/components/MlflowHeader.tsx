@@ -49,10 +49,10 @@ export const MlflowHeader = ({
         />
         <Link to={ExperimentTrackingRoutes.rootRoute}>
           <MlflowLogo
+            isDarkTheme={isDarkTheme}
             css={{
               display: 'block',
               height: theme.spacing.md * 2,
-              color: theme.colors.textPrimary,
             }}
           />
         </Link>
