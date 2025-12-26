@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none">
-    <a href="https://mlflow.org/">
+    <a href="https://github.com/GeorgePearse/visdet-ui">
         <img alt="Visia logo" src="assets/logo.svg" width="200" />
     </a>
 </h1>
@@ -52,7 +52,6 @@ The React frontend is deployed to Netlify via `netlify.toml`. Deploys automatica
 3. Create a **new minimal repo** (recommended) or use a subdirectory
 
 **Minimal server repo structure:**
-
 ```
 visdet-mlflow-server/
 ├── Procfile
@@ -61,13 +60,11 @@ visdet-mlflow-server/
 ```
 
 **Procfile:**
-
 ```
 web: mlflow server --host 0.0.0.0 --port $PORT --backend-store-uri $DATABASE_URL --default-artifact-root $MLFLOW_ARTIFACT_ROOT
 ```
 
 **requirements.txt:**
-
 ```
 mlflow>=2.0
 psycopg2-binary
@@ -82,13 +79,11 @@ boto3
 #### Step 3: Set Up S3 Artifact Storage
 
 **Option A: AWS S3**
-
 1. Create an S3 bucket (e.g., `visdet-mlflow-artifacts`)
 2. Create an IAM user with S3 access
 3. Note the Access Key ID and Secret Access Key
 
 **Option B: Cloudflare R2 (cheaper)**
-
 1. Create R2 bucket in Cloudflare dashboard
 2. Create R2 API token with read/write access
 3. Note the Account ID, Access Key, and Secret Key
@@ -97,12 +92,12 @@ boto3
 
 In Railway project settings, add these variables:
 
-| Variable                | Value                          |
-| ----------------------- | ------------------------------ |
-| `MLFLOW_ARTIFACT_ROOT`  | `s3://your-bucket-name/mlflow` |
-| `AWS_ACCESS_KEY_ID`     | Your access key                |
-| `AWS_SECRET_ACCESS_KEY` | Your secret key                |
-| `AWS_DEFAULT_REGION`    | `us-east-1` (or your region)   |
+| Variable | Value |
+|----------|-------|
+| `MLFLOW_ARTIFACT_ROOT` | `s3://your-bucket-name/mlflow` |
+| `AWS_ACCESS_KEY_ID` | Your access key |
+| `AWS_SECRET_ACCESS_KEY` | Your secret key |
+| `AWS_DEFAULT_REGION` | `us-east-1` (or your region) |
 
 **For Cloudflare R2, also add:**
 | Variable | Value |
@@ -178,9 +173,9 @@ gcloud run services add-iam-policy-binding visdet-mlflow-server \
 
 - `cloud_run_max_instances` defaults to `2` to cap scale-out.
 - Cloud SQL defaults to a small tier (`db-f1-micro`) and 10GB disk.
-- Optional billing _alerts_ can be enabled via Terraform (`enable_budget_alerts=true`), but GCP budgets do not hard-stop spend; they notify when thresholds are crossed.
+- Optional billing *alerts* can be enabled via Terraform (`enable_budget_alerts=true`), but GCP budgets do not hard-stop spend; they notify when thresholds are crossed.
 
-To enable budget alerts you'll need your Billing Account ID and then run:
+To enable budget alerts you’ll need your Billing Account ID and then run:
 
 ```
 cd infra/terraform
