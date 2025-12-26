@@ -86,7 +86,9 @@ module.exports = async ({ github, context }) => {
       })
     ).filter(
       ({ path, conclusion }) =>
-        path !== ".github/workflows/protect.yml" && conclusion !== "cancelled"
+        path !== ".github/workflows/protect.yml" &&
+        path !== ".github/workflows/maintainer-approval.yml" &&
+        conclusion !== "cancelled"
     );
 
     // Deduplicate workflow runs by path and event, keeping the latest attempt
