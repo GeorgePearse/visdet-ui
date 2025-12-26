@@ -1,12 +1,12 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/visdet-mlflow-docker/mlflow-server:latest'
-      - '-f'
-      - 'infra/docker/mlflow-server/Dockerfile'
-      - '.'
+      - "build"
+      - "-t"
+      - "us-central1-docker.pkg.dev/$PROJECT_ID/visdet-mlflow-docker/mlflow-server:latest"
+      - "-f"
+      - "infra/docker/mlflow-server/Dockerfile"
+      - "."
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/visdet-mlflow-docker/mlflow-server:latest'
-timeout: '1800s'
+  - "us-central1-docker.pkg.dev/$PROJECT_ID/visdet-mlflow-docker/mlflow-server:latest"
+timeout: "1800s"
