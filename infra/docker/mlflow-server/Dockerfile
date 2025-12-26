@@ -10,12 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy MLflow source (this repo) and install it.
-COPY . /app
-
+# Install MLflow from PyPI (includes pre-built UI)
 RUN pip install --no-cache-dir --upgrade pip \
-  && pip install --no-cache-dir . \
-  && pip install --no-cache-dir psycopg2-binary google-cloud-storage
+  && pip install --no-cache-dir mlflow psycopg2-binary google-cloud-storage
 
 EXPOSE 8080
 

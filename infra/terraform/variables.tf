@@ -136,11 +136,6 @@ variable "billing_account_id" {
   description = "Billing account ID (required for budgets). Format: 000000-000000-000000"
   type        = string
   default     = null
-
-  validation {
-    condition     = !var.enable_budget_alerts || (var.billing_account_id != null && var.billing_account_id != "")
-    error_message = "billing_account_id must be set when enable_budget_alerts is true."
-  }
 }
 
 variable "monthly_budget_usd" {

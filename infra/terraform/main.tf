@@ -97,7 +97,7 @@ resource "google_sql_database_instance" "mlflow" {
 
     ip_configuration {
       ipv4_enabled = true
-      require_ssl  = false
+      ssl_mode     = "ALLOW_UNENCRYPTED_AND_ENCRYPTED"
     }
 
     user_labels = var.labels
