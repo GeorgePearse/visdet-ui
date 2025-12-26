@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
   script.src = 'https://widget.runllm.com';
 
   var thisScript = document.querySelector('script[src$="js/runllm.js"]');
-  var brandLogo = thisScript ? thisScript.src.replace(/js\/runllm\.js$/, 'images/favicon.ico') : '/favicon.ico';
+  var brandLogo = thisScript
+    ? thisScript.src.replace(/js\/runllm\.js$/, 'images/favicon.ico')
+    : '/favicon.ico';
 
   script.setAttribute('runllm-keyboard-shortcut', 'Mod+j'); // cmd-j or ctrl-j to open the widget.
   script.setAttribute('runllm-name', 'MLflow');
