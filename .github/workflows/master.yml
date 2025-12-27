@@ -204,7 +204,9 @@ jobs:
       - uses: ./.github/actions/pipdeptree
       - name: Run tests
         run: |
-          uv run --no-sync pytest -n auto \
+          # Note: Don't use -n auto here as autologging tests build pip wheels
+          # which causes race conditions with parallel execution
+          uv run --no-sync pytest \
             tests/tracking/fluent/test_fluent_autolog.py \
             tests/autologging
 
@@ -337,11 +339,13 @@ jobs:
       - uses: ./.github/actions/pipdeptree
       - name: Run tests
         run: |
-          uv run --no-sync pytest -n auto --splits=${{ matrix.splits }} --group=${{ matrix.group }} --durations=30 \
+          # Note: Don't use -n auto here as tests/types builds pip wheels
+          # which causes race conditions with parallel execution
+          uv run --no-sync pytest --splits=${{ matrix.splits }} --group=${{ matrix.group }} --durations=30 \
             tests/pyfunc tests/types --ignore tests/pyfunc/test_spark_connect.py
 
           # test_spark_connect.py fails if it's run with other tests, so run it separately.
-          uv run --no-sync pytest -n auto tests/pyfunc/test_spark_connect.py
+          uv run --no-sync pytest tests/pyfunc/test_spark_connect.py
 
   windows:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
