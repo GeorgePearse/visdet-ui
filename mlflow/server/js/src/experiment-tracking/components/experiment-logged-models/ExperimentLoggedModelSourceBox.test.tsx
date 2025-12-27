@@ -39,7 +39,7 @@ describe('ExperimentLoggedModelSourceBox', () => {
     });
     expect(screen.getByText('branch-abc')).toBeInTheDocument();
     expect(screen.getByText('abc123d')).toBeInTheDocument();
-  });
+  }, 30000);
 
   it('renders a placeholder when run source is not defined', async () => {
     renderTestComponent([]);

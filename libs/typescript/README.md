@@ -1,7 +1,7 @@
 <h1 align="center" style="border-bottom: none">
     <div>
         <a href="https://mlflow.org/"><picture>
-            <img alt="MLflow Logo" src="https://raw.githubusercontent.com/mlflow/mlflow/refs/heads/master/assets/logo.svg" width="200" />
+            <img alt="Visia Logo" src="../../assets/logo.svg" width="200" />
         </picture></a>
         <br>
         MLflow TypeScript SDK
