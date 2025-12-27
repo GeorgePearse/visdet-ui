@@ -98,7 +98,7 @@ def _init_server(
         },
     ) as proc:
         try:
-            _await_server_up_or_die(server_port)
+            _await_server_up_or_die(server_port, timeout=60 if server_type == "flask" else 30)
             url = f"http://{LOCALHOST}:{server_port}"
             _logger.info(
                 f"Launching tracking server on {url} with backend URI {backend_uri} and "
