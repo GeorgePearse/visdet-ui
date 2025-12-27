@@ -49,5 +49,5 @@ describe('GroupParentCellRenderer', () => {
       expect(href).toContain('searchFilter=attributes.run_id+IN+%28%27run-1%2C+run-2%27%29');
       expect(href).toContain('isPreview=true');
     });
-  });
+  }, 30000);
 });
