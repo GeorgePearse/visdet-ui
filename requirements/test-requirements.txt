@@ -6,7 +6,6 @@ pytest-repeat
 pytest-cov
 pytest-timeout
 pytest-xdist  # Parallel test execution within runners
-pytest-split  # Duration-based test splitting
 pytest-testmon  # Incremental testing - only runs tests affected by changes
 moto>=4.2.0,<5,!=4.2.5
 azure-storage-blob>=12.0.0
