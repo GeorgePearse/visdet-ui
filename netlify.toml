@@ -1,13 +1,13 @@
 [build]
-  base = "mlflow/server/js"
-  command = "yarn build"
-  publish = "build"
+base = "mlflow/server/js"
+command = "yarn build"
+publish = "build"
 
 [build.environment]
-  NODE_VERSION = "22"
+NODE_VERSION = "22"
 
 # SPA redirect - route all requests to index.html for React Router
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/*"
+to = "/index.html"
+status = 200

@@ -180,7 +180,7 @@ gcloud run services add-iam-policy-binding visdet-mlflow-server \
 - Cloud SQL defaults to a small tier (`db-f1-micro`) and 10GB disk.
 - Optional billing _alerts_ can be enabled via Terraform (`enable_budget_alerts=true`), but GCP budgets do not hard-stop spend; they notify when thresholds are crossed.
 
-To enable budget alerts you’ll need your Billing Account ID and then run:
+To enable budget alerts you'll need your Billing Account ID and then run:
 
 ```
 cd infra/terraform
