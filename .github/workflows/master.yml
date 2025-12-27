@@ -91,7 +91,9 @@ jobs:
       - name: Run tests
         run: |
           source dev/setup-ssh.sh
-          uv run --no-sync pytest -n auto --splits=${{ matrix.splits }} --group=${{ matrix.group }} \
+          # Note: Don't use -n auto here as some tests build pip wheels
+          # which causes race conditions with parallel execution
+          uv run --no-sync pytest --splits=${{ matrix.splits }} --group=${{ matrix.group }} \
             --quiet --requires-ssh --ignore-flavors \
             --ignore=tests/examples \
             --ignore=tests/evaluate \
@@ -239,7 +241,9 @@ jobs:
       - uses: ./.github/actions/pipdeptree
       - name: Run tests
         run: |
-          uv run --no-sync pytest -n auto --splits=${{ matrix.splits }} --group=${{ matrix.group }} tests/models
+          # Note: Don't use -n auto here as model tests may build pip wheels
+          # which causes race conditions with parallel execution
+          uv run --no-sync pytest --splits=${{ matrix.splits }} --group=${{ matrix.group }} tests/models
 
   evaluate:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
@@ -269,7 +273,9 @@ jobs:
       - uses: ./.github/actions/pipdeptree
       - name: Run tests
         run: |
-          uv run --no-sync pytest -n auto --splits=${{ matrix.splits }} --group=${{ matrix.group }} tests/evaluate --ignore=tests/evaluate/test_default_evaluator_delta.py
+          # Note: Don't use -n auto here as some tests build pip wheels
+          # which causes race conditions with parallel execution
+          uv run --no-sync pytest --splits=${{ matrix.splits }} --group=${{ matrix.group }} tests/evaluate --ignore=tests/evaluate/test_default_evaluator_delta.py
       - name: Run tests with delta
         run: |
           uv run --no-sync pytest tests/evaluate/test_default_evaluator_delta.py
@@ -388,7 +394,9 @@ jobs:
           HADOOP_HOME: /tmp/winutils/hadoop-3.2.2
         run: |
           export PATH=$PATH:$HADOOP_HOME/bin
-          uv run --no-sync pytest -n auto tests \
+          # Note: Don't use -n auto here as some tests build pip wheels
+          # which causes race conditions with parallel execution
+          uv run --no-sync pytest tests \
             --splits=${{ matrix.splits }} \
             --group=${{ matrix.group }} \
             --ignore-flavors \
